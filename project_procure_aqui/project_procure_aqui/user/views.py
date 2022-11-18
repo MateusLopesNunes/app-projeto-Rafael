@@ -57,14 +57,3 @@ class ListOfProductsViewSet(viewsets.ModelViewSet):
         if self.action == 'list' or self.action == 'retrieve':
             return ListOfProductsDetailSerializer
         return ListOfProductsSerializer
-
-    def update(self, request, pk=None):
-        list_of_products = ListOfProducts.objects.get(id=pk)
-        list_update = self.get_object()
-        
-        print(list_update.products.first().id)
-        print(list_of_products.products.all())
-
-        instance = super().update(request)
-        print(instance.data)
-        return instance

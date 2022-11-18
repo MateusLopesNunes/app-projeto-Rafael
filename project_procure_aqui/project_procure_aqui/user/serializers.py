@@ -16,7 +16,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     city = CityDetailSerializer()
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'sex', 'birth_date', 'city']
+        fields = ['id', 'username', 'email', 'sex', 'birth_date', 'city']
 
 #post, put, delete
 class StateSerializer(serializers.ModelSerializer):
