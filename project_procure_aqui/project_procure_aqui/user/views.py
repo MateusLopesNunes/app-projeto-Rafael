@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
 # @api_view(['GET'])    
@@ -23,8 +24,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 class UserViewSet(viewsets.ModelViewSet):
     #permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['username', 'email']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['username', 'email']
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
