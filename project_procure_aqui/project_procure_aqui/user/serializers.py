@@ -61,6 +61,7 @@ class ListOfProductsDetailSerializer(serializers.ModelSerializer):
 
 #post, put, delete
 class ListOfProductsSerializer(serializers.ModelSerializer):
+    products = serializers.CharField(max_length=100)
     class Meta:
         model = ListOfProducts
         fields = '__all__'

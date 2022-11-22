@@ -58,3 +58,17 @@ class ListOfProductsViewSet(viewsets.ModelViewSet):
         if self.action == 'list' or self.action == 'retrieve':
             return ListOfProductsDetailSerializer
         return ListOfProductsSerializer
+
+    def update(self, request, *args, **kwargs):
+        '''produts = request.data.get('products')
+        produts_format = produts.replace('[', '')
+        result_format = produts_format.replace(']', '')
+
+        product_array = result_format.split(", ")
+        list_int = list(map(int, product_array))
+
+        instance = self.get_object()
+        list_of_products = ListOfProducts(user=instance.user)
+        list_of_products.products.set(list_int)'''
+
+        return ListOfProducts.objects.update(request.data)

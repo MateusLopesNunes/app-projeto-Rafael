@@ -87,10 +87,22 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(supermarket)
         HistoricPrice.objects.create(product=product, price=product.price, supermarket=supermarket)
         return create
+    
+    def update_and_create_historic(self, data, request):
+        instance = super().update(request)
+        product = data.get_object()
+        HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
+        return instance
 
     def update(self, request, pk=None):
         historic_prices = HistoricPrice.objects.filter(product=pk)
 
+        if historic_prices.count() < 5:
+            instance = super().update(request)
+            product = self.get_object()
+            HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
+            return instance
+ 
         sum = 0.0
         for historic_price in historic_prices:
            sum += historic_price.price
