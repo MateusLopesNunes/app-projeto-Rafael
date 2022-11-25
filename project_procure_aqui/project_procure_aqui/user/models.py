@@ -74,3 +74,4 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 class ListOfProducts(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product)
+

@@ -49,6 +49,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'sex', 'birth_date', 'city']
 
+class UserDeleteSerializer(serializers.ModelSerializer): 
+    password_confirm = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = User
+        fields = ['password', 'password_confirm']
+
 
 #get
 class ListOfProductsDetailSerializer(serializers.ModelSerializer):
@@ -61,7 +68,6 @@ class ListOfProductsDetailSerializer(serializers.ModelSerializer):
 
 #post, put, delete
 class ListOfProductsSerializer(serializers.ModelSerializer):
-    products = serializers.CharField(max_length=100)
     class Meta:
         model = ListOfProducts
         fields = '__all__'

@@ -1,13 +1,14 @@
 from rest_framework import viewsets
 from .models import User, ListOfProducts
 from product.models import State
-from .serializers import UserDetailSerializer, UserSerializer, UserUpdateSerializer, ListOfProductsSerializer,ListOfProductsDetailSerializer
+from .serializers import UserDetailSerializer, UserSerializer, UserUpdateSerializer, UserDeleteSerializer, ListOfProductsSerializer,ListOfProductsDetailSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.contrib.auth.hashers import make_password, check_password
 
 
 # @api_view(['GET'])    
@@ -20,6 +21,19 @@ from rest_framework import filters
 #     else:
 #         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+@api_view(['get'])
+def validate_user(request, id, email, password):
+    user = User.object.get(id=id)
+    
+    validate_password = check_password(password=password, encoded=user.password)
+
+    if user.email == email and validate_password:
+        return Response({'is_product': True})
+
+    return Response({'is_product': False})
+
+   
 
 class UserViewSet(viewsets.ModelViewSet):
     #permission_classes = (IsAuthenticated,)
@@ -34,6 +48,8 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserSerializer
         elif self.action == 'update' or self.action == 'partial_update': 
             return UserUpdateSerializer
+        elif self.action == 'delete':
+            return UserDeleteSerializer
 
     def perform_create(self, serializer):
         print(serializer)
@@ -60,15 +76,4 @@ class ListOfProductsViewSet(viewsets.ModelViewSet):
         return ListOfProductsSerializer
 
     def update(self, request, *args, **kwargs):
-        '''produts = request.data.get('products')
-        produts_format = produts.replace('[', '')
-        result_format = produts_format.replace(']', '')
-
-        product_array = result_format.split(", ")
-        list_int = list(map(int, product_array))
-
-        instance = self.get_object()
-        list_of_products = ListOfProducts(user=instance.user)
-        list_of_products.products.set(list_int)'''
-
         return ListOfProducts.objects.update(request.data)

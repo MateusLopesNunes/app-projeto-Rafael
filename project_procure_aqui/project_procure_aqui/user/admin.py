@@ -17,5 +17,6 @@ class ListOfProductsAdmin(admin.ModelAdmin):
     search_fields = ('user',) #cria uma pesquisa
     list_per_page = 5 #cria paginação
 
+
 admin.site.register(User, UserAdmin)
 admin.site.register(ListOfProducts, ListOfProductsAdmin)
