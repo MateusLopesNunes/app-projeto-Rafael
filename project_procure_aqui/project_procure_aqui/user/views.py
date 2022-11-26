@@ -11,14 +11,14 @@ from rest_framework import filters
 from django.contrib.auth.hashers import make_password, check_password
 
 
-@api_view(['get'])
+@api_view(['put'])
 def updateListOfProducts(request, id, user, products):
     products_format = products.replace('[', '')
     result_format = products_format.replace(']', '')
     product_array = result_format.split(", ")
     list_int = list(map(int, product_array))
 
-    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = 3')
+    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = ' + id)
     list_p = x[0]
     list_p.products.set(list_int)
 

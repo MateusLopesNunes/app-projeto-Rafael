@@ -108,22 +108,15 @@ class ProductViewSet(viewsets.ModelViewSet):
            sum += historic_price.price
 
         average = sum/historic_prices.count()    
-        #print("------------------" + str(average) + "------------------")    
         x = 0.0
         for historic_price in historic_prices:
            x += abs((historic_price.price - average) * 2)
 
         result = math.sqrt(x / historic_prices.count() - 1)
-        print(average)
-        print(result)
         x = average + result
         y = average - result
 
         price = float(request.data.get('price'))
-        print("----------------------------------------------------------------------------")
-        print(str(x))
-        print(str(y))
-        print(price)
 
         if price <= (average + result) and price >= (average - result):
             instance = super().update(request)
@@ -132,13 +125,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return instance
         else:
             return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
-
-        '''instance = super().update(request)
-        product = self.get_object()
-        HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
-        return instance'''
         
-
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
