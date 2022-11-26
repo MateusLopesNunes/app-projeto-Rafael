@@ -25,6 +25,7 @@ urlpatterns = [
     path('bar_code/<int:code>/supermarket/<int:id>', viewsProduct.find_bar_code),
     path('products/<int:code>/update', viewsProduct.update_product),
     path('citys/<int:id>/filter', viewsProduct.filter_city_per_state),
+    path('update_list_products/list/<int:id>/user/<int:user>/products/<str:products>', viewsUser.updateListOfProducts),
     path('validateUser/<int:id>/email/<str:email>/password/<str:password>', viewsUser.validate_user),
     #path('users/filter/<str:email>', viewsUser.filter_with_email),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

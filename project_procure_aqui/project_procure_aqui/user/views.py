@@ -11,15 +11,20 @@ from rest_framework import filters
 from django.contrib.auth.hashers import make_password, check_password
 
 
-# @api_view(['GET'])    
-# def filter_with_email(request, email):
-#     users = User.objects.filter(email=email)
-#     user = users[0]
-#     serializer = UserDetailSerializer(user)
-#     if user:
-#         return Response(serializer.data ,status=status.HTTP_200_OK)
-#     else:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
+@api_view(['get'])
+def updateListOfProducts(request, id, user, products):
+    products_format = products.replace('[', '')
+    result_format = products_format.replace(']', '')
+    product_array = result_format.split(", ")
+    list_int = list(map(int, product_array))
+
+    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = 3')
+    list_p = x[0]
+    list_p.products.set(list_int)
+
+    list_p.save()
+    return Response(status=status.HTTP_201_CREATED)
+
 
 
 @api_view(['get'])
@@ -32,8 +37,7 @@ def validate_user(request, id, email, password):
         return Response({'is_product': True})
 
     return Response({'is_product': False})
-
-   
+ 
 
 class UserViewSet(viewsets.ModelViewSet):
     #permission_classes = (IsAuthenticated,)

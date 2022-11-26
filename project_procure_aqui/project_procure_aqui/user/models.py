@@ -8,6 +8,7 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail  
 
+
 #from django.utils.translation import ugettext_lazy
 
 class UserManager(auth_models.BaseUserManager):
