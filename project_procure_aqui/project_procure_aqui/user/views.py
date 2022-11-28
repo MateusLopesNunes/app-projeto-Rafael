@@ -12,13 +12,13 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 @api_view(['put'])
-def updateListOfProducts(request, id, user, products):
+def updateListOfProducts(request, id, products):
     products_format = products.replace('[', '')
     result_format = products_format.replace(']', '')
     product_array = result_format.split(", ")
     list_int = list(map(int, product_array))
 
-    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = ' + id)
+    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = ' + str(id))
     list_p = x[0]
     list_p.products.set(list_int)
 
