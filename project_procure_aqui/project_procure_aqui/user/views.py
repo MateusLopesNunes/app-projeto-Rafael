@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 @api_view(['put'])
-def updateListOfProducts(request, id, products):
+def update_list_of_products(request, id, products):
     products_format = products.replace('[', '')
     result_format = products_format.replace(']', '')
     product_array = result_format.split(", ")
@@ -25,6 +25,15 @@ def updateListOfProducts(request, id, products):
     list_p.save()
     return Response(status=status.HTTP_201_CREATED)
 
+
+@api_view(['delete'])
+def delete_product_in_list_of_products(request, id):
+
+    x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = ' + str(id))
+    list_p = x[0]
+
+    list_p.save()
+    return Response(status=status.HTTP_201_CREATED)
 
 
 @api_view(['get'])
@@ -68,7 +77,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ListOfProductsViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    #permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = ListOfProducts.objects.all()
     #serializer_class = ListOfProductsSerializer
     filter_backends = [DjangoFilterBackend]
@@ -81,3 +90,19 @@ class ListOfProductsViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         return ListOfProducts.objects.update(request.data)
+
+    def create(self, request):
+        products = request.data.get('products')
+        products_format = products.replace('[', '')
+        result_format = products_format.replace(']', '')
+        #product_array = result_format.split(" ")
+        list_int = int(result_format)
+        newlist = []
+        newlist.append(list_int)
+        print(newlist)
+
+        user = User.objects.filter(id=request.data.get('user'))[0]
+        list_of_products = ListOfProducts.objects.create(user=user)
+        list_of_products.products.set(newlist)
+        
+        return Response(status=status.HTTP_201_CREATED)
