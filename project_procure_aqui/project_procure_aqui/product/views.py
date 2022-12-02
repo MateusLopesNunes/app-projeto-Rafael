@@ -17,6 +17,7 @@ from product import serializers
 from product import models
 from django_filters.rest_framework import DjangoFilterBackend
 import math
+from rest_framework import filters
 
  
 @api_view(['GET'])
@@ -70,8 +71,9 @@ def update_product(request, code):
 class ProductViewSet(viewsets.ModelViewSet):
     #permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Product.objects.order_by('-creation_date_product').filter(is_visible=True)
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category', 'product_name', 'bar_code']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['category', 'bar_code']
+    search_fields = ['product_name']
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'retrieve':
