@@ -1,6 +1,3 @@
-from itertools import product
-from math import prod
-from traceback import print_tb
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,7 +23,6 @@ def find_bar_code(request, code, id, format=None):
     supermarket = Supermarket.objects.filter(id=id)
 
     if len(supermarket) == 0:
-        print('entrou')
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     product_in_supermaket = Product.objects.filter(supermarket=supermarket[0])
@@ -39,33 +35,12 @@ def find_bar_code(request, code, id, format=None):
             return Response({'is_product': False})
 
 
-'''Agora funciona'''
 @api_view(['GET'])
 def filter_city_per_state(request, id):
     state = State.objects.get(id=id)
     city = City.objects.filter(state=state)
     serializer = CitySerializer(city, many=True)
     return Response(serializer.data ,status=status.HTTP_200_OK)
-   
-
-@api_view(['POST'])    
-def update_product(request, code):
-    serializer = HistoricPriceUpdateSerializer(data=request.data)
-    if serializer.is_valid():
-        product = Product.objects.get(id=code)
-        if product:
-            price = request.data.get("price")
-            print(price)
-            supermarket = product.supermarket
-            print(supermarket)
-            historicPrice = HistoricPrice.objects.create(product=product, price=price, supermarket=supermarket[0])
-            serializer = HistoricPriceSerializer(data=historicPrice)
-            if serializer.is_valid():
-                serializer.save()
-                print(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -84,9 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         create = super().create(request)
         product = Product.objects.get(id=create.data.get('id'))
-        print(product)
         supermarket = product.supermarket
-        print(supermarket)
         HistoricPrice.objects.create(product=product, price=product.price, supermarket=supermarket)
         return create
     
@@ -98,27 +71,41 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def update(self, request, pk=None):
         historic_prices = HistoricPrice.objects.filter(product=pk)
+    
+        price = float(request.data.get('price'))
 
-        if historic_prices.count() < 5:
+        average = 0.0
+        result = 0.0
+        if historic_prices.count() > 1:
+            sum = 0.0
+            for historic_price in historic_prices:
+                sum += historic_price.price
+                average = sum/historic_prices.count()
+                print("-----------------1----------------")    
+
+            x = 0.0
+            for historic_price in historic_prices:
+                x += abs((historic_price.price - average) * 2)
+
+                result = math.sqrt(x / historic_prices.count() - 1)
+                x = average + result
+                y = average - result        
+                print("-----------------2----------------")    
+
+
+        if historic_prices.count() < 2:
             instance = super().update(request)
             product = self.get_object()
             HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
             return instance
- 
-        sum = 0.0
-        for historic_price in historic_prices:
-           sum += historic_price.price
 
-        average = sum/historic_prices.count()    
-        x = 0.0
-        for historic_price in historic_prices:
-           x += abs((historic_price.price - average) * 2)
-
-        result = math.sqrt(x / historic_prices.count() - 1)
-        x = average + result
-        y = average - result
-
-        price = float(request.data.get('price'))
+        fifty_percent_average = average * 0.50
+        if historic_prices.count() < 5:
+            if price <= (fifty_percent_average + average) and price >= (fifty_percent_average - average):
+                instance = super().update(request)
+                product = self.get_object()
+                HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
+                return instance
 
         if price <= (average + result) and price >= (average - result):
             instance = super().update(request)
@@ -126,8 +113,39 @@ class ProductViewSet(viewsets.ModelViewSet):
             HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
             return instance
         else:
+            instance = super().update(request)
+            print(instance.content)
             return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
         
+
+        ''' historic_prices = HistoricPrice.objects.filter(product=pk)
+
+        average = 0.0
+        result = 0.0
+        if historic_prices.count() > 1:
+            sum = 0.0
+            for historic_price in historic_prices:
+                sum += historic_price.price
+
+            average = sum/historic_prices.count()    
+            print(average)    
+            x = 0.0
+            for historic_price in historic_prices:
+                x += abs((historic_price.price - average) * 2)
+
+            result = math.sqrt(x / historic_prices.count() - 1)
+            print(result)
+
+        product = self.get_object()
+        
+        if product.price > (average + result) or product.price < (average - result):
+            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
+
+        instance = super().update(request)
+        product = self.get_object()
+        HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
+        return instance'''
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)

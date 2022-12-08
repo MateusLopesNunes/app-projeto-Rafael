@@ -28,7 +28,6 @@ def update_list_of_products(request, id, products):
 
 @api_view(['delete'])
 def delete_product_in_list_of_products(request, id):
-
     x = ListOfProducts.objects.raw('SELECT * FROM user_listofproducts as list_p where id = ' + str(id))
     list_p = x[0]
 
@@ -65,14 +64,12 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserDeleteSerializer
 
     def perform_create(self, serializer):
-        print(serializer)
         instance = serializer.save()
         instance.set_password(instance.password)
         instance.save()     
 
     def perform_update(self, serializer):
         instance = serializer.save()
-        instance.set_password(instance.password)
         instance.save()
 
 
@@ -99,7 +96,6 @@ class ListOfProductsViewSet(viewsets.ModelViewSet):
         list_int = int(result_format)
         newlist = []
         newlist.append(list_int)
-        print(newlist)
 
         user = User.objects.filter(id=request.data.get('user'))[0]
         list_of_products = ListOfProducts.objects.create(user=user)

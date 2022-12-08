@@ -23,7 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('bar_code/<int:code>/supermarket/<int:id>', viewsProduct.find_bar_code),
-    path('products/<int:code>/update', viewsProduct.update_product),
     path('citys/<int:id>/filter', viewsProduct.filter_city_per_state),
     path('update_list_products/list/<int:id>/products/<str:products>', viewsUser.update_list_of_products),
     path('delete_product_list_products/<int:id>/', viewsUser.delete_product_in_list_of_products),
