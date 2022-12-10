@@ -34,6 +34,23 @@ def find_bar_code(request, code, id, format=None):
         else:
             return Response({'is_product': False})
 
+@api_view(['GET'])
+def find_average_and_lowest_price(request, id, format=None):
+    historics = HistoricPrice.objects.filter(product=id)
+
+    sum = 0.0
+    average = 0.0
+    prices = []
+    for historic in historics:
+        sum += historic.price
+        average = sum/historics.count()
+        prices.append(historic.price)
+
+
+    print(min(prices))
+    print(average)
+    return Response({'is_product': 's'})
+
 
 @api_view(['GET'])
 def filter_city_per_state(request, id):
@@ -86,14 +103,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             x = 0.0
             for historic_price in historic_prices:
                 x += abs((historic_price.price - average) * 2)
-
-                result = math.sqrt(x / historic_prices.count() - 1)
-                x = average + result
-                y = average - result        
-                print("-----------------2----------------")    
-
+                print("-----------------2----------------")   
+            result = math.sqrt(x / historic_prices.count()) 
 
         if historic_prices.count() < 2:
+            print('nada')
             instance = super().update(request)
             product = self.get_object()
             HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
@@ -102,49 +116,28 @@ class ProductViewSet(viewsets.ModelViewSet):
         fifty_percent_average = average * 0.50
         if historic_prices.count() < 5:
             if price <= (fifty_percent_average + average) and price >= (fifty_percent_average - average):
+                print('media')
                 instance = super().update(request)
                 product = self.get_object()
                 HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
                 return instance
 
         if price <= (average + result) and price >= (average - result):
+            print('average= ' + str(average) + 'desvio= ' + str(result))
+            print('desvio')
             instance = super().update(request)
             product = self.get_object()
             HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
             return instance
         else:
             instance = super().update(request)
-            print(instance.content)
-            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
-        
-
-        ''' historic_prices = HistoricPrice.objects.filter(product=pk)
-
-        average = 0.0
-        result = 0.0
-        if historic_prices.count() > 1:
-            sum = 0.0
-            for historic_price in historic_prices:
-                sum += historic_price.price
-
-            average = sum/historic_prices.count()    
-            print(average)    
-            x = 0.0
-            for historic_price in historic_prices:
-                x += abs((historic_price.price - average) * 2)
-
-            result = math.sqrt(x / historic_prices.count() - 1)
-            print(result)
-
-        product = self.get_object()
-        
-        if product.price > (average + result) or product.price < (average - result):
+            product = Product(instance.data)
+            product = self.get_object()
+            product.is_visible = False
+            print(product)
+            product.save()
             return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
 
-        instance = super().update(request)
-        product = self.get_object()
-        HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
-        return instance'''
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

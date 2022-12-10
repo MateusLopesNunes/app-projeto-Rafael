@@ -19,7 +19,8 @@ class UserManager(auth_models.BaseUserManager):
                  is_staff=True, is_active=True,
                  is_superuser=is_superuser, last_login=now,
                  date_joined=now, **extra_fields)
-        user.set_password(password)
+        #user.set_password(password)
+        user.password(password)
         user.save(using=self._db)
         return user
 
