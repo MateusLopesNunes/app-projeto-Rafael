@@ -27,7 +27,7 @@ urlpatterns = [
     path('update_list_products/list/<int:id>/products/<str:products>', viewsUser.update_list_of_products),
     path('delete_product_list_products/<int:id>/', viewsUser.delete_product_in_list_of_products),
     path('validateUser/<int:id>/email/<str:email>/password/<str:password>', viewsUser.validate_user),
-    path('products/find_average_and_lowest_price/<int:id>/', viewsProduct.find_average_and_lowest_price),
+    path('products/find_average_and_lowest_price/<int:bar_code>/', viewsProduct.find_average_and_lowest_price),
     #path('users/filter/<str:email>', viewsUser.filter_with_email),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

@@ -35,21 +35,18 @@ def find_bar_code(request, code, id, format=None):
             return Response({'is_product': False})
 
 @api_view(['GET'])
-def find_average_and_lowest_price(request, id, format=None):
-    historics = HistoricPrice.objects.filter(product=id)
+def find_average_and_lowest_price(request, bar_code, format=None):
+    products = Product.objects.filter(bar_code=bar_code)
 
     sum = 0.0
     average = 0.0
     prices = []
-    for historic in historics:
-        sum += historic.price
-        average = sum/historics.count()
-        prices.append(historic.price)
+    for product in products:
+        sum += product.price
+        average = sum/products.count()
+        prices.append(product.price)
 
-
-    print(min(prices))
-    print(average)
-    return Response({'is_product': 's'})
+    return Response({'average': average, 'lowest_price': min(prices)})
 
 
 @api_view(['GET'])
