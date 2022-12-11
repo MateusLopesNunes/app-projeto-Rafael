@@ -127,14 +127,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             HistoricPrice.objects.create(product=product, price=product.price, supermarket=product.supermarket)
             return instance
         else:
-            instance = super().update(request)
-            product = Product(instance.data)
             product = self.get_object()
             product.is_visible = False
             print(product)
             product.save()
-            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto'})
-
+            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto, portanto ele será analizado pelos administradores do sistema'})
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

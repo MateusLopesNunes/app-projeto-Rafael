@@ -9,6 +9,9 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ('username',) #cria uma pesquisa
     list_per_page = 5 #cria paginação
 
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
 
 class ListOfProductsAdmin(admin.ModelAdmin):
     list_display = ('id', 'user',) #coloca os campos na tabela
