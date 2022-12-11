@@ -95,12 +95,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             for historic_price in historic_prices:
                 sum += historic_price.price
                 average = sum/historic_prices.count()
-                print("-----------------1----------------")    
 
             x = 0.0
             for historic_price in historic_prices:
                 x += abs((historic_price.price - average) * 2)
-                print("-----------------2----------------")   
             result = math.sqrt(x / historic_prices.count()) 
 
         if historic_prices.count() < 2:
@@ -129,9 +127,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             product = self.get_object()
             product.is_visible = False
-            print(product)
+            historic = HistoricPrice.objects.create(product=product, price=price, supermarket=product.supermarket)
+            print(historic)
             product.save()
-            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto, portanto ele será analizado pelos administradores do sistema'})
+            return Response({'Error': 'o valor apresentado está discrepante a média de preços deste produto, portanto ele será analizado pelos administradores do sistema'}, status=status.HTTP_202_ACCEPTED)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
